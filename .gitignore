@@ -1,0 +1,5 @@
+otp/graph.obj
+otp/*.gtfs.zip
+otp/*.osm.pbf
+
+.DS_Store
