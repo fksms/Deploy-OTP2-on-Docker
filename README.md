@@ -8,27 +8,46 @@ OpenTripPlannerのVer2.6以降はTravel Time Analysis機能が削除され、RES
 Settings  >  Advanced  >  Memory limit
 ```
 の値を、JVM用に指定するメモリの最大ヒープ・サイズよりも0.3GB程度大きな値に指定しておく。<br>
-（本プロジェクトでは、`compose.yml`でメモリの最大ヒープ・サイズを6GB（`JAVA_OPTS=-Xmx6G`）と指定しているので、docker desktop側は6.3GB程度に指定すれば良い。）<br>
-<br>
+（`compose.yml`でメモリの最大ヒープ・サイズを6GB（`JAVA_OPTS=-Xmx6G`）と指定した場合は、docker desktop側は6.3GB程度に指定すれば良い。）<br>
 <br>
 
-### 1. グラフのビルド
-始めに、OSM（OpenStreetMap）データとGTFSデータからグラフの生成を行う。<br>
-OSMデータとGTFSデータの規模によるが、ビルドには少々時間が必要。<br>
-otpフォルダ内に以下のファイルを格納する。<br>
+### 1. OSM（OpenStreetMap）データとGTFSデータのダウンロード
+グラフ生成に必要となるOSM（OpenStreetMap）データとGTFSデータをダウンロードし、otpフォルダ内に格納する。<br>
+GTFSデータのダウンロードにあたって、[公共交通オープンデータセンター](https://developer.odpt.org/)からAPIキーを取得してください。<br>
 
 - `*.osm.pbf`
 
     OSMデータを提供している[geofabrik.de](https://download.geofabrik.de/)から[関東地方のデータ](https://download.geofabrik.de/asia/japan/kanto.html)をpbfフォーマットで取得可能。
-
+    
 - `*.gtfs.zip`
 
-    公共交通オープンデータセンターから取得する。GTFSデータは複数格納可能。<br>
-    本プロジェクトでは、JR東日本の[鉄道関連情報](https://ckan.odpt.org/dataset/jreast_tokyo_area/resource/a6f842e9-e053-4be5-a926-87d0b49753d3)のGTFSデータを利用した。
+    以下を参考にGTFSデータを一括でダウンロードしてください。
 
 <br>
 
-ビルドにあたって、`compose.yml`を以下のように設定
+envファイルのコピー （取得したAPIキーを`.env`に書き込んでください）
+```sh
+cp .env.example .env
+```
+
+GTFSデータの一括ダウンロード
+```sh
+sh gtfs_downloader.sh
+```
+<br>
+
+### 2. グラフのビルド
+OSMデータとGTFSデータからグラフの生成を行う。<br>
+OSMデータとGTFSデータの規模によるが、ビルドには少々時間が必要。<br>
+グラフのビルドが完了すると、otpフォルダ内にグラフデータが保存されます。<br>
+グラフのビルドにあたって、otpフォルダ内に以下の名前のOSMデータとGTFSデータが存在するかを確認する。<br>
+
+- `*.osm.pbf`
+- `*.gtfs.zip`
+
+<br>
+
+`compose.yml`を以下のように設定
 ```diff
 - command: [ '--load', '--serve' ]
 + command: [ '--save', '--build', '--serve' ]
@@ -39,25 +58,20 @@ otpフォルダ内に以下のファイルを格納する。<br>
 docker compose up -d
 ```
 
-ビルドが完了すると停止しても良い
+ビルドが完了してWebサーバーが起動完了すれば停止しても良い
 ```sh
 docker compose down
 ```
 <br>
-<br>
 
-### 2. グラフをロードして使用する
-otpフォルダ内に以下のファイルを格納する。<br>
+### 3. グラフをロードして使用する
+グラフのロードにあたって、otpフォルダ内に以下のグラフデータが存在するかを確認する。<br>
 
-- `*.osm.pbf`
-- `*.gtfs.zip`
 - `graph.obj`
 
-    1のビルドで生成されたグラフデータ
-
 <br>
 
-グラフのロードにあたって、`compose.yml`を以下のように設定
+`compose.yml`を以下のように設定
 ```diff
 - command: [ '--save', '--build', '--serve' ]
 + command: [ '--load', '--serve' ]
@@ -73,9 +87,8 @@ docker compose up -d
 docker compose down
 ```
 <br>
-<br>
 
-### 3. APIの動作確認
+### 4. APIの動作確認
 
 https://docs.opentripplanner.org/en/dev-2.x/sandbox/TravelTime/
 

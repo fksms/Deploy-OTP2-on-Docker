@@ -2,4 +2,6 @@ otp/graph.obj
 otp/*.gtfs.zip
 otp/*.osm.pbf
 
+.env
+
 .DS_Store
