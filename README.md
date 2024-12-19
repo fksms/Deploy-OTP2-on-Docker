@@ -8,7 +8,7 @@ OpenTripPlannerのVer2.6以降はTravel Time Analysis機能が削除され、RES
 Settings  >  Advanced  >  Memory limit
 ```
 の値を、JVM用に指定するメモリの最大ヒープ・サイズよりも0.3GB程度大きな値に指定しておく。<br>
-（`compose.yml`でメモリの最大ヒープ・サイズを6GB（`JAVA_OPTS=-Xmx6G`）と指定した場合は、docker desktop側は6.3GB程度に指定すれば良い。）<br>
+（例として、`*.yml`でメモリの最大ヒープ・サイズを6GB（`JAVA_OPTS=-Xmx6G`）と指定した場合は、docker desktop側は6.3GB程度に指定すれば良い。）<br>
 <br>
 
 ### 1. OSM（OpenStreetMap）データとGTFSデータのダウンロード
@@ -47,20 +47,14 @@ OSMデータとGTFSデータの規模によるが、ビルドには少々時間�
 
 <br>
 
-`compose.yml`を以下のように設定
-```diff
-- command: [ '--load', '--serve' ]
-+ command: [ '--save', '--build', '--serve' ]
-```
-
 起動
 ```sh
-docker compose up -d
+docker compose -f build_graph.yml up -d
 ```
 
 ビルドが完了してWebサーバーが起動完了すれば停止しても良い
 ```sh
-docker compose down
+docker compose -f build_graph.yml down
 ```
 <br>
 
@@ -71,20 +65,14 @@ docker compose down
 
 <br>
 
-`compose.yml`を以下のように設定
-```diff
-- command: [ '--save', '--build', '--serve' ]
-+ command: [ '--load', '--serve' ]
-```
-
 起動
 ```sh
-docker compose up -d
+docker compose -f load_graph.yml up -d
 ```
 
 停止する場合は以下を実行
 ```sh
-docker compose down
+docker compose -f load_graph.yml down
 ```
 <br>
 

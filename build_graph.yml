@@ -1,0 +1,13 @@
+services:
+  otp:
+    image: opentripplanner/opentripplanner:2.5.0 # 2.6.0以降はTravel Time Analysis機能が削除されているため、2.5.0を指定
+    container_name: opentripplanner
+    environment:
+      - JAVA_OPTS=-Xmx6G # メモリの最大ヒープ・サイズ（6G）
+    volumes:
+      - type: bind
+        source: ./otp # ローカルのパス
+        target: /var/opentripplanner # コンテナ内のパス
+    command: [ '--save', '--build', '--serve' ]
+    ports:
+      - "8080:8080"
