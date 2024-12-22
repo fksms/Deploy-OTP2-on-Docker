@@ -2,11 +2,11 @@ FROM node:alpine
 
 WORKDIR /workspace
 
-COPY middle/package*.json ./
+COPY app/package*.json ./
 
 RUN <<EOF
     npm install -g npm
     npm install
 EOF
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]

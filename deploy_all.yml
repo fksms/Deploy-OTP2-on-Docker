@@ -1,4 +1,5 @@
 services:
+
   otp:
     image: opentripplanner/opentripplanner:2.5.0 # 2.6.0以降はTravel Time Analysis機能が削除されているため、2.5.0を指定
     container_name: opentripplanner
@@ -11,22 +12,41 @@ services:
     command: [ '--load', '--serve' ]
     ports:
       - "8080:8080"
+    restart: always
 
-  middle:
+  app:
     build:
       context: .
-      dockerfile: ./docker/middle/Dockerfile
-    container_name: middle
+      dockerfile: ./docker/app/Dockerfile
+    container_name: app
     volumes:
       - type: bind
-        source: ./middle # ローカルのパス
+        source: ./app # ローカルのパス
         target: /workspace # コンテナ内のパス
       - type: volume
-        source: node_modules # 名前付きボリューム
+        source: node_modules_app # 名前付きボリューム
+        target: /workspace/node_modules # コンテナ内のパス
+    ports:
+      - "8000:8000"
+    restart: always
+
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile
+    container_name: web
+    volumes:
+      - type: bind
+        source: ./web # ローカルのパス
+        target: /workspace # コンテナ内のパス
+      - type: volume
+        source: node_modules_web # 名前付きボリューム
         target: /workspace/node_modules # コンテナ内のパス
     ports:
       - "5173:5173"
+    restart: always
 
 # https://zenn.dev/usma11dia0/articles/dockerfile_run_npm_not_working
 volumes:
-  node_modules:
+  node_modules_app:
+  node_modules_web:
