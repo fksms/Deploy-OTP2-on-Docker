@@ -1,6 +1,6 @@
 ## 利用方法
 
-### 0. はじめに
+### はじめに
 
 OpenTripPlannerのVer2.6以降はTravel Time Analysis機能が削除され、REST APIが無効化されているため、Dockerを利用してVer2.5のOpenTripPlannerを起動する。<br>
 デフォルトの設定で起動すると、実行中にメモリが不足し強制終了されてしまうので、Docker Desktopの<br>
@@ -11,7 +11,7 @@ Settings  >  Advanced  >  Memory limit
 （例として、`*.yml`でメモリの最大ヒープ・サイズを6GB（`JAVA_OPTS=-Xmx6G`）と指定した場合は、docker desktop側は6.3GB程度に指定すれば良い。）<br>
 <br>
 
-### 1. OSM（OpenStreetMap）データとGTFSデータのダウンロード
+### OSM（OpenStreetMap）データとGTFSデータのダウンロード
 グラフ生成に必要となるOSM（OpenStreetMap）データとGTFSデータをダウンロードし、otpフォルダ内に格納する。<br>
 GTFSデータのダウンロードにあたって、[公共交通オープンデータセンター](https://developer.odpt.org/)からAPIキーを取得してください。<br>
 
@@ -36,7 +36,7 @@ sh gtfs_downloader.sh
 ```
 <br>
 
-### 2. グラフのビルド
+### グラフのビルド
 OSMデータとGTFSデータからグラフの生成を行う。<br>
 OSMデータとGTFSデータの規模によるが、ビルドには少々時間が必要。<br>
 グラフのビルドが完了すると、otpフォルダ内にグラフデータが保存されます。<br>
@@ -58,7 +58,7 @@ docker compose -f build_graph.yml down
 ```
 <br>
 
-### 3. グラフをロードして使用する
+### グラフをロードして使用する
 グラフのロードにあたって、otpフォルダ内に以下のグラフデータが存在するかを確認する。<br>
 
 - `graph.obj`
@@ -76,7 +76,7 @@ docker compose -f load_graph.yml down
 ```
 <br>
 
-### 4. APIの動作確認
+### APIの動作確認
 
 https://docs.opentripplanner.org/en/dev-2.x/sandbox/TravelTime/
 
@@ -96,3 +96,33 @@ https://docs.opentripplanner.org/en/dev-2.x/sandbox/TravelTime/
 ```
 http://localhost:8080/otp/traveltime/isochrone?batch=true&location=35.63273135483024,139.74189548323065&time=2024-12-03T14:00:00%2B09:00&modes=WALK,TRANSIT&arriveBy=true&cutoff=30M&cutoff=60M
 ```
+<br>
+<br>
+
+
+## 応用
+
+### Webサーバー、Appサーバーの立ち上げ
+
+OpenTripPlannerのAPIを利用したアプリケーションを提供するために、OTPと合わせてWebサーバー、Appサーバーも起動を行う。<br>
+otpフォルダ内に以下のグラフデータが存在するかを確認する。<br>
+
+- `graph.obj`
+
+<br>
+
+ビルド
+```sh
+docker compose -f deploy_all.yml build
+```
+
+起動
+```sh
+docker compose -f deploy_all.yml up -d
+```
+
+停止する場合は以下を実行
+```sh
+docker compose -f deploy_all.yml down
+```
+<br>
