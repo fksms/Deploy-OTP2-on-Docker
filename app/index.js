@@ -77,5 +77,5 @@ app.get("/api/proxy", async (req, res) => {
 
 // APIサーバーを起動
 app.listen(PORT, () => {
-  console.log(`API server is running on http://localhost:${PORT}`);
+  console.log("API server is running");
 });
